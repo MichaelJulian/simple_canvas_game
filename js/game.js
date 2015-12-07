@@ -1,3 +1,7 @@
+Array.prototype.max = function() {
+  return Math.max.apply(null, this);
+};
+
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -31,11 +35,14 @@ monsterImage.src = "images/monster.png";
 
 // Game objects
 var hero = {
-	speed: 256 // movement in pixels per second
+	speed: 256, // movement in pixels per second
+	times: []
 };
 var monster = {
-	speed: hero.speed*.95
+	speed: hero.speed*.95,
+	times: []
 };
+var timeAlive = 0;
 var monstersCaught = 0;
 
 // Handle keyboard controls
@@ -57,16 +64,15 @@ var reset = function () {
 	// Throw the monster somewhere on the screen randomly
 	monster.x = 32 + (Math.random() * (canvas.width - 64));
 	monster.y = 32 + (Math.random() * (canvas.height - 64));
+	
+	var record = Math.round(timeAlive/100)/10;
+	monster.times.push(record);
+	then = Date.now();
+	timeOfDeath = then;
 };
 
 // Update game objects
 var update = function (modifier) {
-  if (219 in keysDown) {
-  	monster.speed = 256*.95
-  }
-  if (221 in keysDown) {
-  	monster.speed = 256*1.05
-  }
   // hero movement
   if (38 in keysDown && hero.y >= 0) { // holding up
     hero.y -= hero.speed * modifier;
@@ -94,6 +100,16 @@ var update = function (modifier) {
   if (68 in keysDown && monster.x <= canvas.width - 32) { // right
     monster.x += monster.speed * modifier;
   }
+  console.log(monster.times)
+
+  // speed hacks
+  if (219 in keysDown) {
+  	monster.speed = 256*.95
+  }
+  if (221 in keysDown) {
+  	monster.speed = 256*1.05
+  }
+
 
 	// Are they touching?
 	if (
@@ -126,7 +142,8 @@ var render = function () {
 	ctx.font = "24px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
-	ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
+	ctx.fillText("Best Time: " + monster.times.max() + " (" + monster.times[monster.times.length - 1] + ")", 32, 32);
+	ctx.fillText("Current: " + Math.floor(timeAlive/100)/10, 32, 64);
 };
 
 // The main game loop
@@ -138,6 +155,7 @@ var main = function () {
 	render();
 
 	then = now;
+	timeAlive = then-timeOfDeath;
 
 	// Request to do this again ASAP
 	requestAnimationFrame(main);
@@ -147,7 +165,10 @@ var main = function () {
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
+var timeAlive = 0;
 // Let's play this game!
 var then = Date.now();
+var timeOfDeath = then;
+monster.times.push(0);
 reset();
 main();
