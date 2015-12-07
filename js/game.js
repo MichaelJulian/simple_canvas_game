@@ -61,7 +61,12 @@ var reset = function () {
 
 // Update game objects
 var update = function (modifier) {
-  
+  if (219 in keysDown) {
+  	monster.speed = 256*.95
+  }
+  if (221 in keysDown) {
+  	monster.speed = 256*1.05
+  }
   // hero movement
   if (38 in keysDown && hero.y >= 0) { // holding up
     hero.y -= hero.speed * modifier;
