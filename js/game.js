@@ -33,7 +33,9 @@ monsterImage.src = "images/monster.png";
 var hero = {
 	speed: 256 // movement in pixels per second
 };
-var monster = {};
+var monster = {
+	speed: hero.speed*.95
+};
 var monstersCaught = 0;
 
 // Handle keyboard controls
@@ -59,6 +61,8 @@ var reset = function () {
 
 // Update game objects
 var update = function (modifier) {
+  
+  // hero movement
   if (38 in keysDown && hero.y >= 0) { // holding up
     hero.y -= hero.speed * modifier;
   }
@@ -70,6 +74,20 @@ var update = function (modifier) {
   }
   if (39 in keysDown && hero.x <= canvas.width - 32) { // right
     hero.x += hero.speed * modifier;
+  }
+
+// monster movement
+  if (87 in keysDown && monster.y >= 0) { // holding up
+    monster.y -= monster.speed * modifier;
+  }
+  if (83 in keysDown && monster.y <= canvas.height - 32) { // down
+    monster.y += monster.speed * modifier;
+  }
+  if (65 in keysDown && monster.x >= 0) { // left
+    monster.x -= monster.speed * modifier;
+  }
+  if (68 in keysDown && monster.x <= canvas.width - 32) { // right
+    monster.x += monster.speed * modifier;
   }
 
 	// Are they touching?
